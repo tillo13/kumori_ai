@@ -17,7 +17,7 @@ from style_template import styles
 # Default Configuration variables
 INPUT_FOLDER_NAME = 'sample_images'
 OUTPUT_FOLDER_NAME = 'generated_images'
-PROMPT = "a hyper-realistic full-color image of woman with blue eyes, extremely detailed facial features"
+PROMPT = "a hyper-realistic full-color image of human with blue eyes, extremely detailed facial features"
 NEGATIVE_PROMPT = "(unrealistic, lowres, low quality, worst quality:1.2), (text:1.2), watermark, painting, drawing, illustration, glitch, deformed, mutated, cross-eyed, ugly, disfigured"
 IDENTITYNET_STRENGTH_RATIO = 1.0
 ADAPTER_STRENGTH_RATIO = 1.0
