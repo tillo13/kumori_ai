@@ -1,2 +1,2 @@
 # kumori_ai
-Some of the prod code from kumori.ai that will help others learn/use
+Some of the prod code from https://kumori.ai that will help others, perhaps...
