@@ -1,3 +1,31 @@
+#ignore macbook ds.store file
+.DS_Store
+
+#gdrive
+credentials.json
+
+# created files and folders
+**/created*
+**/video_images*
+**/processed*
+**/processing_*
+**/saved*
+**/test*
+# Ignore files and folders containing '_ai_images'
+*_ai_images
+*_ai_images/
+
+
+# Ignore config .bak files globally
+**/config.ini-e
+**/config.ini.backup
+
+# ignore all test files
+**test**
+
+# ignore all depricated files
+**depricated**
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
