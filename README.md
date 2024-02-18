@@ -15,3 +15,9 @@ Some of the prod code from [kumori.ai](https://kumori.ai) that will help others,
   ![MP4 Maker Demo2](./images/mp4_maker2.png)
   
   ![MP4 Maker Demo3](./images/mp4_maker3.png)
+
+  - **[Face Recognition](https://github.com/tillo13/kumori_ai/tree/main/face_recog):** A collection of facial recognition and preprocessing scripts for accurately detecting a face in an image, preprocessing that image, adding or removing items (hat.png in this example) from detected humans, and then saving the processed face for further analysis.
+
+  ![Face Recognition Demo1](./images/face_recognition1.png)
+  
+  ![Face Recognition Demo2](./images/face_recognition2.png)
