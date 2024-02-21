@@ -2,43 +2,56 @@ import os
 import datetime
 import shutil
 import requests
-from openai_utils import create_image
+from openai_utils import create_image, summarize_and_estimate_cost
 import mp4_maker_engine
 import uuid
+import time
+
+RETRY_NUMBER = 5
+RETRY_OPENAI_CALL = 3
+SLEEP_BETWEEN_RETRIES = 2  
+NUMBER_OF_VIDEOS = 3  
+
 
 #====GLOBAL VARIABLES====#
 CHARACTER_DESCRIPTION = """
-The main characters of the story are a vicious white Alpha wolf known for his razor sharp teeth and a slim sleek body; a kind-hearted brown boston terrier who's the second in command; and a small, mistreated Beagle.
+The main character of the story is a muscular, blonde-haired, blue eye man with strength and extraordinary physical capabilities. 
 """
 
 STORYLINE_DESCRIPTION = """
-The character is involved focuses on this exact activity: 
+The photo realistic hyper detailed character is involved on this exact activity: 
 """
 
 GPT_IMAGE_DESCRIPTION = [
-    "Illustrate the stark white alpha wolf with his razor sharp teeth, positioned as the intimidating leader of the pack.",
-    "Show the brown boston terrier, exemplifying strength and kindness, acting as the second in command.",
-    "Depict the Alpha wolf stealing a catch from the tiny Beagle during a river hunting.",
-    "Visualize the boston terrier kindly giving his own catch to the Beagle, showing a stark contrast to the Alpha.",
-    "Illustrate the moment another pack threatens their territory, with the Alpha wolf recklessly taking them on.",
-    "Show the Alpha leaving his weaker pack mates to fend for themselves, exposing his cruel nature.",
-    "Visualize the pack being attacked with the smaller Dachshund in striking danger.",
-    "Show the boston terrier jumping in to save the Dachshund, demonstrating his bravery and loyalty.",
-    "Illustrate the tension in the air as the boston terrier stands against the merciless Alpha, hinting at an upcoming showdown.",
-    "Present the final stand between the Alpha and the boston terrier, leaving the fate of the pack hanging in the balance."
+    "Illustrate the man in a striking stance, displaying his strong build.",
+    "Visualize the man working out at the gym with intense dedication.",
+    "Show the man deadlifting 300 pounds.",
+    "As he loses excess weight and starts building muscle, visualize the man growing stronger.",
+    "Illustrate him as he squat-lifts an astonishing load of 500 pounds.",
+    "Depict the man bench pressing 1000 pounds, shocking the onlookers.",
+    "Visualize him trying to lift the entire heavyweight of the gym building.",
+    "Illustrate him pulling a massive cargo ship through the ocean",
+    "Depict the man exerting his force to bring landscapes together.",
+    "Show the man's hair turning blue like a blazing fire as he bench presses the planet earth.",
+    "Illustrate the man in highly defined neon blue and black colors, with blue fire-like hair, lifting planets on a stake.",
+    "Visualize the man smashing galaxies together for amusement, as if playing with toys.",
+    "Present the  man evolving into a divine entity who holds the universe in his hands."
 ]
 
 VIDEO_CAPTIONS = [
-    "The intimidating white alpha leads with an iron paw...",
-    "The kind-hearted boston terrier, stands as the pack's second in command...",
-    "The alpha heartlessly steals the tiny Beagle's catch during a hunt...",
-    "Showing compassion, the boston terrier gives his catch to the beaten Beagle...",
-    "Their territory threatened, the Alpha wolf engages the enemy pack...",
-    "Abandoned by the Alpha, the pack is left to fend for themselves against the invaders...",
-    "In the chaos, a small Dachshund finds itself in peril...",
-    "In the nick of time, the brave boston terrier steps in to protect the vulnerable Dachshund...",
-    "Facing off against the cruel Alpha, the boston terrier takes a stand...",
-    "In a final showdown, the pack's fate hangs in the balance..."
+    "Meet the 6ft buff guy with blonde hair, exuding power and dominance.",
+    "Here he is at the gym, pushing his limits and working out.",
+    "He lifts with ease, deadlifting 300 pounds!",
+    "He looks stronger in each frame, his muscles getting more pronounced.",
+    "Now, see him squat 500 pounds, smashing personal bests!",
+    "He moves onto bench presses, shockingly lifting 1000 pounds!",
+    "Watch as he elevates his work out, lifting the entire gym building.",
+    "His strength knows no bounds, as he pulls a cargo ship through the ocean.",
+    "Not content, he brings continents closer together with his sheer force.",
+    "Presenting a dramatic change, his hair becomes blue and fiery as he bench-presses our planet Earth.",
+    "His features glow neon blue and black, and his fiery hair stands out as he lifts staked planets.",
+    "For a bit of fun, he flings galaxies together, showing off his incomparable strength.",
+    "Witness the true form of a god as he holds the universe in his hands."
 ]
 
 IMAGE_SIZE = "1024x1024"
@@ -65,22 +78,35 @@ def download_image(url, dest_folder, filename):
     else:
         print(f"Error downloading {url}: Status code {response.status_code}")
 
-def archive_existing_images(base_directory):
-    image_files = [f for f in os.listdir(base_directory) if f.endswith((".png", ".jpg", ".jpeg"))]
+def archive_existing_assets(base_directory):
+    # You can specify other extensions if your videos have a different one
+    image_extensions = ('.jpg', '.png', '.jpeg')
+    video_extensions = ('.mp4',)
     
-    if image_files:
+    # Get all asset files
+    asset_files = [f for f in os.listdir(base_directory) if f.endswith(image_extensions + video_extensions)]
+    
+    if asset_files:
         timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
-        archive_directory = os.path.join(base_directory, f"{timestamp}_images")
+        archive_directory = os.path.join(os.path.dirname(base_directory), "archive", f"{timestamp}_assets")
         os.makedirs(archive_directory, exist_ok=True)
-        print(f"Archiving existing images to {archive_directory}")
+        
+        print(f"Archiving existing assets ({len(asset_files)}) to {archive_directory}")
 
-        for filename in image_files:
+        for filename in asset_files:
             old_path = os.path.join(base_directory, filename)
             new_path = os.path.join(archive_directory, filename)
             shutil.move(old_path, new_path)
             print(f"Moved {filename} to archive.")
+
+        print(f"Number of files archived this time: {len(asset_files)}")
+        print(f"Total files in archive directory: {len(os.listdir(archive_directory))}")
+
+        return len(asset_files), len(os.listdir(archive_directory))
+
     else:
-        print("No existing images to archive. The directory is clean.")
+        print("No existing assets to archive. The directory is clean.")
+        return 0, 0
 
 
 def get_image_files(folder_path):
@@ -90,38 +116,83 @@ def get_image_files(folder_path):
         key=lambda x: os.path.basename(x).lower()
     )
 
+def create_image_with_retry(prompt, model, n, quality, response_format, 
+                            size, style, user_id, retry_limit):
+    for i in range(retry_limit):
+        try:
+            response = create_image(
+                prompt=prompt,
+                model=model,
+                n=n,
+                quality=quality,
+                response_format=response_format,
+                size=size,
+                style=style,
+                user_id=user_id
+            )
+            if 'data' in response:
+                return response
+        except Exception as e:
+            if i < retry_limit - 1:
+                print(f"Error occurred while creating image: {e}. Retrying...")
+                time.sleep(SLEEP_BETWEEN_RETRIES)
+                continue
+            else:
+                print(f"Error occurred while creating image: {e}. All retries failed.")
+                raise
+    return None
+
 def main():
-    working_directory = os.path.join(os.getcwd(), 'video_images')
-    archive_existing_images(working_directory)
+    working_directory = os.path.join(os.getcwd(), 'latest_video_assets')
     os.makedirs(working_directory, exist_ok=True)
+    
+    # Call archive function before generating new assets
+    archive_existing_assets(working_directory)
+    
+    success = False
+    
+    for j in range(RETRY_NUMBER):  # Introducing retry mechanism
+        try:
+            # Generate images
+            for i, image_description in enumerate(GPT_IMAGE_DESCRIPTION):
+                image_prompt = f"{CHARACTER_DESCRIPTION.strip()} {STORYLINE_DESCRIPTION.strip()} {image_description.strip()}"
 
-    # Generate images
-    for i, image_description in enumerate(GPT_IMAGE_DESCRIPTION):
-        # Add CHARACTER_DESCRIPTION and STORYLINE_DESCRIPTION to the prompt
-        image_prompt = f"{CHARACTER_DESCRIPTION.strip()} {STORYLINE_DESCRIPTION.strip()} {image_description.strip()}"
+                image_response = create_image_with_retry(
+                    prompt=image_prompt,
+                    model=MODEL_NAME,
+                    n=1,
+                    quality=IMAGE_QUALITY,
+                    response_format="url",
+                    size=IMAGE_SIZE,
+                    style=IMAGE_STYLE,
+                    user_id=USER_ID,
+                    retry_limit=RETRY_OPENAI_CALL
+                )
 
-        image_response = create_image(
-            prompt=image_prompt,
-            model=MODEL_NAME,
-            n=1,
-            quality=IMAGE_QUALITY,
-            response_format="url",
-            size=IMAGE_SIZE,
-            style=IMAGE_STYLE,
-            user_id=USER_ID
-        )
+                if image_response is not None:
+                    image_url = image_response['data'][0]['url']
+                    filename = f"image_{i:04d}.png"  # Ensure files are named sequentially
+                    download_image(image_url, working_directory, filename)
 
-        if 'data' in image_response:
-            image_url = image_response['data'][0]['url']
-            filename = f"image_{i:04d}.png"  # Ensure files are named sequentially
-            download_image(image_url, working_directory, filename)
+            # Verify that the number of generated images equals the number of descriptions
+            generated_image_files = get_image_files(working_directory)
+            if len(GPT_IMAGE_DESCRIPTION) != len(generated_image_files):
+                print(f"Attempt {j+1} failed: The number of generated images ({len(generated_image_files)}) does not match the number of descriptions ({len(GPT_IMAGE_DESCRIPTION)}). Retrying...")
+            else:
+                print(f"Successfully generated all images in attempt {j+1}.")
+                success = True
+                break  # Success, break out of the retry loop
 
-    # Verify that the number of generated images equals the number of descriptions
-    generated_image_files = get_image_files(working_directory)
-    if len(GPT_IMAGE_DESCRIPTION) != len(generated_image_files):
-        print(f"The number of generated images ({len(generated_image_files)}) does not match the number of descriptions ({len(GPT_IMAGE_DESCRIPTION)}).")
-        return  # Stop the execution if they don't match
-
+        except Exception as e:  # Catch all exceptions and print the error message
+            print(f"Attempt {j+1} failed due to error: {e}. Retrying...")
+            time.sleep(SLEEP_BETWEEN_RETRIES)  # Sleep before next attempt
+    
+    if not success:
+        # If all attempts failed, log the failure and return
+        print(f"All {RETRY_NUMBER} attempts failed.")
+        return 0
+    
+    # Video generation starts here:
     caption_properties = {
         'font_size': FONT_SIZE,
         'font_color': FONT_COLOR,
@@ -139,7 +210,11 @@ def main():
         OUTPUT_FILENAME_PATTERN
     )
 
-from openai_utils import summarize_and_estimate_cost
+    # After generating the video, archive the new assets
+    archive_existing_assets(working_directory)
+    
+    return 1  # If it reaches here means video generation was successful
+
 
 summary_data_example = {
     'summary_text': 'Video generation completed.',
@@ -149,5 +224,9 @@ summary_data_example = {
 }
 summarize_and_estimate_cost(summary_data_example)
 
-if __name__ == '__main__':
-    main()
+if __name__ == "__main__":
+    total_successes = sum(main() for _ in range(NUMBER_OF_VIDEOS))
+
+    print(f"====SUMMARY====")
+    print(f"Total videos created: {total_successes}")
+    print(f"Total images created: {total_successes * len(VIDEO_CAPTIONS)}")

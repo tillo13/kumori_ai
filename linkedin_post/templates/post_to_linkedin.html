@@ -1,0 +1,51 @@
+<!-- templates/post_form.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Post to LinkedIn</title>
+</head>
+<body>
+
+<!-- Display access token and JSON response for development purposes -->
+<h3>Access Token:</h3>
+<p>{{ access_token }}</p>
+
+<h3>JSON Response:</h3>
+<!-- Only display json_response if it is defined -->
+{% if json_response %}
+<pre>{{ json_response | tojson | safe }}</pre>
+{% endif %}
+
+    <!-- The form to post to LinkedIn -->
+<!-- Only one form for both text and image posting -->
+<form action="/post_to_linkedin" method="post" enctype="multipart/form-data">
+    <label for="post_text">Enter text to post:</label><br>
+    <textarea id="post_text" name="post_text" required rows="4" cols="50"></textarea><br>
+
+    <input type="hidden" name="sub" value="{{ sub }}">
+    <input type="hidden" name="access_token" value="{{ access_token }}">
+
+    <!-- Checkbox for the user to decide if they want to upload an image -->
+    <input type="checkbox" id="add_image" name="add_image" value="true">
+    <label for="add_image">Add an image to post</label><br>
+
+    <!-- Image file input will only be shown if the user decides to upload an image -->
+    <div id="image_upload" style="display: none;">
+        <label for="image_file">Select image to upload:</label><br>
+        <input type="file" id="image_file" name="image_file"><br>
+    </div>
+
+    <input type="submit" value="Post to LinkedIn">
+</form>
+
+<script>
+    // Client-side script to toggle visibility of image upload input
+    document.getElementById('add_image').onchange = function() {
+        document.getElementById('image_upload').style.display = this.checked ? 'block' : 'none';
+    };
+</script>
+
+</body>
+</html>
