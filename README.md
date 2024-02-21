@@ -23,3 +23,9 @@ Some of the prod code from [kumori.ai](https://kumori.ai) that will help others,
   ![Face Recognition Demo1](./images/face_recognition1.png)
   
   ![Face Recognition Demo2](./images/face_recognition2.png)
+
+- **Gmail Utilities:** A Python script that facilitates the sending of emails through Gmail. It includes attachment support, access to Google Secret Manager for retrieving Gmail credentials, and a test case to demonstrate its usage.
+
+- **LinkedIn Post App:** A Flask-based web application that allows users to authenticate with LinkedIn, and post textual and image content to their LinkedIn timeline. This app uses OAuth protocol for LinkedIn integration, stores client id and secret via Google Secret Manager, and facilitates image uploads.
+
+- **LinkedIn Utilities:** A Helper script for the LinkedIn Post app, containing all the necessary utility functions for generating LinkedIn auth URLs, processing callbacks, fetching access tokens and user info, and handling LinkedIn posts including image uploads. Client id and secret are securely stored and retrieved from Google Secret store.
