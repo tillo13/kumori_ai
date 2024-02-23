@@ -1,8 +1,8 @@
 # Ollama Chat Interface
 
-This directory contains a Python script (`chat.py`) and a Flask web application (`app.py` inside the `flask` folder) that facilitate interaction with different AI models provided by Ollama. These tools create a user-friendly way to chat with AI models directly from the command line or through a browser.
+This directory contains a Python script (`chat_engine.py`) and a Flask web application (`app.py` inside the `flask` folder) that facilitate interaction with different AI models provided by Ollama. These tools create a user-friendly way to chat with AI models directly from the command line or through a browser.
 
-## Standalone Python App (chat.py)
+## Standalone Python App (chat_engine.py)
 
 ### Features:
 
@@ -12,11 +12,14 @@ This directory contains a Python script (`chat.py`) and a Flask web application 
 
 ### Setup:
 
-Before running `chat.py` for the first time, ensure all models are available locally by executing `ollama pull` commands for each model listed in the script.
+Before running `chat_engine.py` for the first time, ensure all models are available locally by executing `ollama pull` commands for each model listed in the script.
 
 ### Usage:
 
-Execute `python chat.py` in the terminal, then interact with the prompt to chat with AI models. Type 'quit' to exit the chat or 'switch' to change the AI model during the conversation.
+Execute `python chat_engine.py` in the terminal, then interact with the prompt to chat with AI models. Type 'quit' to exit the chat or 'switch' to change the AI model during the conversation.
+
+- **External Script Interaction**: The `call_into_engine.py` script demonstrates how one can programmatically invoke `chat_engine.py` to obtain AI model responses. This allows for scripting and automation of AI conversations without manual input.
+
 
 ## Flask Web App (ollama/flask/app.py)
 

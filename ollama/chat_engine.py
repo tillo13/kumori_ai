@@ -18,6 +18,7 @@ import ollama
 import subprocess
 import time
 import threading
+import sys
 
 # Track script start time
 script_start_time = time.time()
@@ -29,6 +30,11 @@ MODELS = {
     '3': 'gemma:7b',
     '4': 'mistral',
 }
+
+def get_response_from_model(model_name, user_message):
+    """Retrieves a response from the given model."""
+    response = interact_with_ollama(model_name, [{'role': 'user', 'content': user_message}])
+    return response
 
 def choose_model():
     print("Please choose a model to talk with:")
@@ -186,6 +192,24 @@ def chat_with_model(model):
         response_time = interact_with_ollama(model, conversation_history)
 
 if __name__ == "__main__":
-    model_to_chat = choose_model()
-    while model_to_chat:
-        model_to_chat = chat_with_model(model_to_chat)
+    # Check if the script is being run with command-line arguments
+    if len(sys.argv) > 1:
+        # Join all command-line arguments into a single string
+        input_string = ' '.join(sys.argv[1:])
+        # Split the input string into model and message parts
+        try:
+            model_name, user_message = input_string.split(" | ")
+            # Validate that the model is one of the available models
+            if model_name not in MODELS.values():
+                print(f"Model '{model_name}' not found. Available models: {', '.join(MODELS.values())}")
+            else:
+                # If valid, fetch and print the response
+                response = get_response_from_model(model_name, user_message)
+                print(response)
+        except ValueError:
+            print("Invalid input format. Please use the format 'model_name | message'.")
+    else:
+        # Fall back to the interactive prompt if no arguments are provided
+        model_to_chat = choose_model()
+        while model_to_chat:
+            model_to_chat = chat_with_model(model_to_chat)
