@@ -33,3 +33,5 @@ Some of the prod code from [kumori.ai](https://kumori.ai) that will help others,
 - **YouTube Video Frame Processing:** Scripts for downloading a YouTube video, parsing it into frames, applying generative AI transformations, and then optimizing these frames. A detailed sequence performs downloading, frame extraction, and AI-based image styling to enhance and create new variations of the original video content.
 
 - **YouTube Video Transcription and Summarization:** Automated tools for transcribing YouTube videos and summarizing the content. Leveraging YouTube's transcript API and OpenAI's GPT models, these scripts provide a way to extract written content from videos, then summarize and highlight key points, facilitating content analysis and repurposing.
+
+- **Ollama Model Chat Interface:** Includes both a Python script and a Flask web app to chat with various AI models like Llama2, Gemma 2B, Gemma 7B, and Mistral. The interface allows for real-time AI conversations through seamless terminal prompts or a browser-based chat environment. It offers a versatile platform for integrations and development of AI-driven chat solutions.
