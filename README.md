@@ -29,3 +29,7 @@ Some of the prod code from [kumori.ai](https://kumori.ai) that will help others,
 - **LinkedIn Post App:** A Flask-based web application that allows users to authenticate with LinkedIn, and post textual and image content to their LinkedIn timeline. This app uses OAuth protocol for LinkedIn integration, stores client id and secret via Google Secret Manager, and facilitates image uploads.
 
 - **LinkedIn Utilities:** A Helper script for the LinkedIn Post app, containing all the necessary utility functions for generating LinkedIn auth URLs, processing callbacks, fetching access tokens and user info, and handling LinkedIn posts including image uploads. Client id and secret are securely stored and retrieved from Google Secret store.
+
+- **YouTube Video Frame Processing:** Scripts for downloading a YouTube video, parsing it into frames, applying generative AI transformations, and then optimizing these frames. A detailed sequence performs downloading, frame extraction, and AI-based image styling to enhance and create new variations of the original video content.
+
+- **YouTube Video Transcription and Summarization:** Automated tools for transcribing YouTube videos and summarizing the content. Leveraging YouTube's transcript API and OpenAI's GPT models, these scripts provide a way to extract written content from videos, then summarize and highlight key points, facilitating content analysis and repurposing.

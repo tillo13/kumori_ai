@@ -110,6 +110,7 @@ def create_image(
         "user": user_id
     }
 
+    print("Beginning OpenAI calls...")
     print("Request payload:")
     print(json.dumps(payload, indent=4))
 

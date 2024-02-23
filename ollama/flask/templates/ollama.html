@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Chat with AI Model</title>
+        <script>
+            function sendMessage() {
+                var xhr = new XMLHttpRequest();
+                var model = document.getElementById("model").value;
+                var message = document.getElementById("message").value;
+                var formData = new FormData();
+                formData.append('model', model);
+                formData.append('message', message);
+                
+                xhr.open('POST', '/chat', true);
+                xhr.onload = function () {
+                    if (this.status == 200) {
+                        var response = JSON.parse(this.responseText);
+                        var responseDiv = document.getElementById("response");
+                        responseDiv.innerHTML += "<b>Bot:</b> " + response.model_response + "<br>";
+                        document.getElementById("message").value = ""; // Clear the message input field
+                    }
+                };
+                xhr.send(formData);
+                return false; // Prevent the default form submission
+            }
+        </script>
+    </head>
+    <body>
+        <h2>AI Model Chat Interface</h2>
+        <div id="response"></div>
+        <form onsubmit="return sendMessage()">
+            <label for="model">Choose a model:</label>
+            <select name="model" id="model">
+                <option value="llama2">llama2</option>
+                <option value="gemma:2b">gemma:2b</option>
+                <option value="gemma:7b">gemma:7b</option>
+            </select>
+            <br><br>
+            <label for="message">Enter your message:</label>
+            <input type="text" id="message" name="message" required>
+            <br><br>
+            <input type="submit" value="Send">
+        </form>
+    </body>
+</html>

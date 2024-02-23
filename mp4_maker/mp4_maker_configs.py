@@ -15,7 +15,7 @@ NUMBER_OF_VIDEOS = 3
 
 #====GLOBAL VARIABLES====#
 CHARACTER_DESCRIPTION = """
-The main character of the story is a muscular, blonde-haired, blue eye man with strength and extraordinary physical capabilities. 
+The main character of the story looks similar to Captain America of Marvel. 
 """
 
 STORYLINE_DESCRIPTION = """
@@ -178,10 +178,11 @@ def main():
             generated_image_files = get_image_files(working_directory)
             if len(GPT_IMAGE_DESCRIPTION) != len(generated_image_files):
                 print(f"Attempt {j+1} failed: The number of generated images ({len(generated_image_files)}) does not match the number of descriptions ({len(GPT_IMAGE_DESCRIPTION)}). Retrying...")
-            else:
-                print(f"Successfully generated all images in attempt {j+1}.")
-                success = True
-                break  # Success, break out of the retry loop
+                continue  # if the number of images doesn't match, then it will just skip to the next loop iteration, rather than exiting the loop completely
+
+            print(f"Successfully generated all images in attempt {j+1}.")
+            success = True
+            break  # This will end the loop only when we have a successful generation of the images
 
         except Exception as e:  # Catch all exceptions and print the error message
             print(f"Attempt {j+1} failed due to error: {e}. Retrying...")
@@ -215,18 +216,43 @@ def main():
     
     return 1  # If it reaches here means video generation was successful
 
-
-summary_data_example = {
-    'summary_text': 'Video generation completed.',
-    'total_input_tokens': 0,  # Assuming no chat completions, you can fill this in if needed
-    'total_output_tokens': 0,  # Assuming no chat completions, you can fill this in if needed
-    'number_of_images': len(VIDEO_CAPTIONS)
-}
-summarize_and_estimate_cost(summary_data_example)
-
 if __name__ == "__main__":
+    start_time = time.time()
+
+    # Configurable parameters
+    COST_PER_IMAGE_IN_HD = 0.080  # Cost per image in HD from DALL-E
+    COST_PER_TOKEN_FOR_INPUT = 0.01 / 1000  # Cost per token for 'gpt-4-0125-preview'
+    TOKENS_PER_IMAGE = 765  # Estimated number of tokens consumed per image for a 1024 * 1024 image with "high" detail level
+    NUMBER_OF_VIDEOS = 3  # Number of videos to generate
+
+    # Derived parameters
+    number_of_images = len(GPT_IMAGE_DESCRIPTION)  # Number of images based on the number of descriptions
     total_successes = sum(main() for _ in range(NUMBER_OF_VIDEOS))
 
+    # Cost estimation
+    image_generation_cost = COST_PER_IMAGE_IN_HD * number_of_images * NUMBER_OF_VIDEOS
+    cost_per_image_for_description = (TOKENS_PER_IMAGE / 1000) * COST_PER_TOKEN_FOR_INPUT
+    image_description_cost = cost_per_image_for_description * number_of_images * NUMBER_OF_VIDEOS
+
+    # Time calculations
+    end_time = time.time()
+    elapsed_time = end_time - start_time
+
+    # Summary printout
     print(f"====SUMMARY====")
+    print(f"Total time taken: {elapsed_time} seconds")
     print(f"Total videos created: {total_successes}")
-    print(f"Total images created: {total_successes * len(VIDEO_CAPTIONS)}")
+    print(f"Total images created: {total_successes * len(GPT_IMAGE_DESCRIPTION)}")  # Correct this line if VIDEO_CAPTIONS was meant instead
+    print(f"Estimated cost of image generation: ${image_generation_cost:.2f}")
+    print(f"Estimated cost of image description: ${image_description_cost:.2f}")
+
+    # Additional potential summary
+    summary_data_example = {
+        'summary_text': 'Video generation completed.',
+        'total_input_tokens': total_successes * TOKENS_PER_IMAGE,  # This might represent the tokens consumed for the prompts
+        'total_output_tokens': 0,  # It's not clear how output tokens are used in your case
+        'number_of_images': total_successes * len(GPT_IMAGE_DESCRIPTION),  # Total number of images created
+        'estimated_cost': image_generation_cost + image_description_cost
+    }
+    summarized_cost = summarize_and_estimate_cost(summary_data_example)
+    print(f"Summarized cost: ${summarized_cost:.2f}")
