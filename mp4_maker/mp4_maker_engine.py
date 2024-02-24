@@ -99,7 +99,7 @@ def cleanup(image_output_dir, audio_file):
         print(f"An error occurred while cleaning up files: {e.strerror}")
         exit(1)
 
-def main(captions_list, working_directory, video_width, video_height, caption_properties, display_duration_per_image, track_type, output_filename_pattern):    
+def main(captions_list, working_directory, video_width, video_height, caption_properties, display_duration_per_image, track_type, output_filename_pattern, audio_choice=None):
     
     start_time = time.time()  # Start timing the script execution
     summary_data = {
@@ -139,8 +139,14 @@ def main(captions_list, working_directory, video_width, video_height, caption_pr
     video_length_in_seconds = len(image_files) * display_duration_per_image
 
     #get audio infos
-    track_info = mp4_maker_random_rfm_selector.get_rndm_yt_rfm(video_length_in_seconds, track_type=track_type)    
-    audio_file = track_info['file_path']
+    track_info = mp4_maker_random_rfm_selector.get_rndm_yt_rfm(video_length_in_seconds, track_type=track_type)
+    # If 'audio_choice' is provided, use it; otherwise, follow the existing logic to fetch the audio
+    if audio_choice:
+        audio_file = audio_choice
+    else:
+        audio_file = track_info['file_path']
+        pass    
+
     summary_data['audio_file'] = audio_file
 
 

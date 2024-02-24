@@ -11,6 +11,7 @@ credentials.json
 **/processing_*
 **/saved*
 **/test*
+**/archive*
 # Ignore files and folders containing '_ai_images'
 *_ai_images
 *_ai_images/
