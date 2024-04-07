@@ -29,6 +29,7 @@ MODELS = {
     '2': 'gemma:2b',
     '3': 'gemma:7b',
     '4': 'mistral',
+    '5': 'wizardlm-uncensored'
 }
 
 def get_response_from_model(model_name, user_message):

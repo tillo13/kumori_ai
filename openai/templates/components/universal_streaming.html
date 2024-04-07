@@ -1,0 +1,149 @@
+<!-- universal_streaming.html -->
+<!--notes
+Uses utils.socketio_utils.py and utils.openai_utils.py
+
+This script enables real-time data streaming between the client and server using Flask-SocketIO and OpenAI's GPT models.
+It's tightly integrated with backend services defined in utils.socketio_utils.py and utilizes OpenAIHelper from utils.openai_utils.py for processing requests.
+
+Key Features:
+- Dynamically emits 'create_stream' events to the server based on input and system prompt.
+- Listens for server responses to display real-time streaming data, connection statuses, and errors.
+
+Usage Instructions:
+- Ensure that this script is included in HTML templates where real-time GPT data streaming is needed.
+- Define HTML elements corresponding to the IDs passed as variables for stream_container_id, typing_indicator_id, etc.
+- Customize the system prompt, initial user input, and GPT model for specific streaming scenarios by setting the appropriate template variables.
+
+Variables:
+- stream_container_id: ID of the container where streaming responses are displayed.
+- typing_indicator_id: ID for visual feedback when data is being processed.
+- toast_container_id: ID for showing status messages about the connection/stream.
+- input_text: Initial text input from the user.
+- system_prompt: Customizable system message for setting the context of the streaming dialogue.
+- gpt_override_model: Allows specifying which GPT model version to use for the streaming request. 
+
+Enhancements:
+- Parameters such as gpt_override_model can be passed to modify backend behavior, enabling different GPT models for various use cases.
+-->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const socket = io(window.location.origin);
+    const streamContainer = document.getElementById("{{ stream_container_id }}");
+    const typingIndicator = document.getElementById("{{ typing_indicator_id }}");
+    const toastContainer = document.getElementById('{{ toast_container_id }}');
+    const saveButton = document.getElementById('{{ save_button_id }}');
+    const fullMessageContainer = document.getElementById('{{ full_message_container_id }}');
+    const waitingText = document.getElementById('waiting-text');
+    var inputText = "{{ input_text }}";
+    var systemPrompt = "{{ system_prompt | safe }}";
+    var fullMessage = ''; // Initialize an empty string to collect the full conversation
+    var gptOverrideModel = "{{ gpt_override_model }}";
+
+function showTypingIndicator() {
+    typingIndicator.classList.remove('d-none');
+}
+
+function hideTypingIndicator() {
+    typingIndicator.classList.add('d-none');
+}
+
+    function displayToastMessage(message, alertClass, autohide = true, delay = 5000) {
+        var toastEl = document.createElement('div');
+        toastEl.className = `toast ${alertClass}`;
+        toastEl.setAttribute('role', 'alert');
+        toastEl.setAttribute('aria-live', 'assertive');
+        toastEl.setAttribute('aria-atomic', 'true');
+
+        if (autohide) {
+            toastEl.setAttribute('data-bs-autohide', autohide.toString());
+            toastEl.setAttribute('data-bs-delay', delay.toString());
+        } else {
+            toastEl.setAttribute('data-bs-autohide', 'false');
+        }
+
+        toastEl.innerHTML = `
+            <div class="toast-header">
+                <strong class="me-auto">Notification</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">${message}</div>
+        `;
+        toastContainer.appendChild(toastEl);
+        var toast = new bootstrap.Toast(toastEl); // Ensure Bootstrap JS is loaded before this script.
+        toast.show();
+    }
+
+    // Emit 'create_stream' at the beginning and display a connecting message
+    if (inputText) {
+    displayToastMessage("<strong>Starting:</strong> Connecting and sending initial input...", "alert-primary");
+    socket.emit('create_stream', {
+    messages: [
+        { "role": "system", "content": systemPrompt },
+        { "role": "user", "content": inputText }
+    ],
+    gpt_override_model: gptOverrideModel
+});
+    showTypingIndicator(); // Show typing indicator as the streaming starts
+}
+
+    // Connection established
+    socket.on('connect', function() {
+        displayToastMessage("<strong>Connected:</strong> Awaiting server response...", "alert-success");
+    });
+
+// Listening for new messages from the server
+socket.on('new_message', (data) => {
+    // Hide the typing indicator
+    typingIndicator.classList.add('d-none');
+    
+    // If the waiting text exists, hide it
+    if (waitingText) waitingText.style.display = 'none';
+    
+    const contentSpan = `<span>${data.content}</span>`;
+    streamContainer.insertAdjacentHTML('beforeend', contentSpan);
+    streamContainer.scrollTop = streamContainer.scrollHeight;
+
+    fullMessage += `${data.content}\n`; // Collecting the full conversation
+
+    if (fullMessageContainer) fullMessageContainer.value = fullMessage; // Update the full conversation container
+});
+
+    // Stream complete
+    socket.on('stream_complete', () => {
+        displayToastMessage("Streaming Completed!", "alert-success");
+        if (saveButton) saveButton.disabled = false;
+    });
+
+    // Handle possible errors
+    socket.on('stream_error', (data) => displayToastMessage(`Streaming Error: ${data.error}`, "alert-danger"));
+
+    socket.on('connect_error', () => displayToastMessage("Connection Error. Ensure the server is operational.", "alert-danger"));
+
+    // When the connection encounters an error
+    socket.on('error', (data) => displayToastMessage(`<strong>Error:</strong> ${data.message}`, "alert-danger"));
+
+    // For the save functionality
+    if (saveButton && fullMessageContainer) {
+        saveButton.addEventListener('click', () => {
+            fetch('/save_stream', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ fullMessage: fullMessage }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Save successful:', data);
+                displayToastMessage("Conversation saved successfully.", "alert-info");
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                displayToastMessage(`Save Error: ${error}`, "alert-danger");
+            });
+        });
+    }
+});
+</script>

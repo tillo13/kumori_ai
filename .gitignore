@@ -15,7 +15,7 @@ credentials.json
 # Ignore files and folders containing '_ai_images'
 *_ai_images
 *_ai_images/
-
+*assets/
 
 # Ignore config .bak files globally
 **/config.ini-e

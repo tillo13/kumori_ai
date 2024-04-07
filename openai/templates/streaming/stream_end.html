@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}
+OpenAI-Stream
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <a href="{{ url_for('stream_start') }}" class="btn btn-primary">Try again?</a>
+
+  <h2>Streaming Content</h2>
+  <p id="userTypedText">You typed: {{ input_text }}</p>
+  <div id="responseContainer" class="mt-3">
+    <!-- Streaming Responses will be dynamically shown here -->
+    <div id="stream-container" class="stream-box">
+      <div class="d-flex align-items-center justify-content-start">
+        <div id="stream-typing-indicator" class="typing-indicator d-none">
+          <div class="typing-bubbles">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+          </div>
+        </div>
+        <span id="waiting-text" class="ms-2">Waiting for WebSocket and OpenAI response...</span>
+      </div>
+    </div>
+  </div>
+  <!-- Display the full conversation and save option after the response -->
+  <textarea id="fullConversation" rows="10" class="form-control mt-3" readonly></textarea>
+  <button id="saveConversationBtn" class="btn btn-success mt-3" disabled>Save This Conversation</button>
+</div>
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
+    <!-- Toasts will be dynamically added here -->
+  </div>
+</div>
+
+{% with 
+  stream_container_id='stream-container', 
+  typing_indicator_id='stream-typing-indicator', 
+  toast_container_id='toast-container',
+  full_message_container_id='fullConversation',
+  save_button_id='saveConversationBtn',
+  input_text=input_text,
+  system_prompt="You are an excellent storyteller.",
+  gpt_override_model="gpt-4-1106-preview" %}
+  {% include 'components/universal_streaming.html' %}
+{% endwith %}
+{% endblock %}

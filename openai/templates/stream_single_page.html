@@ -1,0 +1,126 @@
+{% extends 'base.html' %}
+
+{% block title %}
+OpenAI-Stream
+{% endblock %}
+
+{% block content %}
+<!-- Content goes here, including your form -->
+<div class="container mt-5">
+    <h2>Enter Text for Streaming</h2>
+    <form id="payloadForm">
+        <div class="mb-3">
+            <label for="textInput" class="form-label">Your Text</label>
+            <input type="text" class="form-control" id="textInput" placeholder="Enter text here">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    <div id="responseContainer" class="mt-3">
+        <!-- Responses will be appended here -->
+    </div>
+</div>
+<!-- Start your content block -->
+<div class="container">
+  <h2>Demo: Streaming via Openai...</h2>
+  <div id="stream-container" class="stream-box">
+    <div class="d-flex align-items-center justify-content-start">
+      <!-- Typing indicator with reduced size -->
+      <div id="stream-typing-indicator" class="typing-indicator d-none">
+        <div class="typing-bubbles">
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+      </div>
+      <!-- "Waiting" text next to the typing indicator -->
+      <span id="waiting-text" class="ms-2">Waiting for WebSocket and OpenAI response...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+  <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toast-container">
+    <!-- Toasts will be dynamically added here by JavaScript -->
+  </div>
+</div>
+<!-- End your content block -->
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const socket = io(window.location.origin);
+    const form = document.getElementById('payloadForm');
+    const streamContainer = document.getElementById("stream-container");
+    const typingIndicator = document.getElementById("stream-typing-indicator");
+    const toastContainer = document.getElementById('toast-container');
+  
+    function displayToastMessage(message, alertClass) {
+      let toastEl = document.createElement('div');
+      toastEl.className = `toast ${alertClass}`;
+      toastEl.innerHTML = `
+        <div class="toast-header">
+          <strong class="me-auto">Connection Status</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">${message}</div>
+      `;
+      toastContainer.appendChild(toastEl);
+      var toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    }
+
+    function appendToStream(content) {
+      hideTypingIndicator();
+      let textSpan = document.createElement("span");
+      textSpan.textContent = content;
+      streamContainer.appendChild(textSpan);
+      // Scroll to bottom if needed
+      streamContainer.scrollTop = streamContainer.scrollHeight;
+    }
+
+    function showTypingIndicator() {
+      typingIndicator.classList.remove('d-none');
+    }
+
+    function hideTypingIndicator() {
+      typingIndicator.classList.add('d-none');
+    }
+
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const inputText = document.getElementById('textInput').value;
+      
+      if (inputText) {
+        let payload = [
+          { "role": "system", "content": "You are an excellent storyteller." },
+          { "role": "user", "content": inputText }
+        ];
+        showTypingIndicator();
+        socket.emit('create_stream', { messages: payload });
+      }
+    });
+
+    // WebSocket events
+    socket.on('connect', function() {
+      displayToastMessage("Connected! Ready to stream data from OpenAI.", "alert-primary");
+    });
+
+    socket.on('new_message', function(data) {
+      appendToStream(data.content);
+    });
+
+    socket.on('stream_complete', function() { 
+      displayToastMessage("Streaming Completed!", "alert-success");
+    });
+
+    socket.on('stream_error', function(data) {
+      displayToastMessage(`Streaming Error: ${data.error}`, "alert-danger");
+    });
+
+    socket.on('connect_error', function() {
+      displayToastMessage("Connection Error. Make sure the server is running.", "alert-danger");
+    });
+  });
+</script>
+{% endblock %}

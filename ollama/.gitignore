@@ -1,0 +1,29 @@
+# macOS system files
+.DS_Store
+
+# Docker related files
+docker-compose*.yaml
+*.docker
+*.ollama
+
+# Python generated files and directories
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter notebook files
+.ipynb_checkpoints/
+
+# Virtual environment
+venv/
+.env
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# PyCharm project settings
+.idea/
+
+# VS Code settings
+.vscode/

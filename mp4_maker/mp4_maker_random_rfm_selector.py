@@ -386,7 +386,8 @@ def get_rndm_yt_rfm(min_length_in_sec, track_type=None):
     too_short = True
     custom_urls = {
         'magic': 'https://www.youtube.com/watch?v=dh01eSOn9_E',
-        'phonk': 'https://www.youtube.com/watch?v=G2uGZ9Bt8JU'
+        'phonk': 'https://www.youtube.com/watch?v=G2uGZ9Bt8JU',
+        'lilla': 'https://www.youtube.com/watch?v=Dn3Md8a7mQ0'  
     }
     logging.info("Attempting to download YouTube audio...")
 
@@ -432,6 +433,8 @@ def get_rndm_yt_rfm(min_length_in_sec, track_type=None):
 
             # Check for an existing file with the expected filename
             expected_filename = f"./audios/{video_link.split('watch?v=')[1]}.mp3"
+            #expected_filename = f"./audios/{yt.title}.mp3"
+
             file_exists = os.path.exists(expected_filename)
 
             if file_exists:

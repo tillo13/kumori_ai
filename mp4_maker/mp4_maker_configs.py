@@ -15,43 +15,34 @@ NUMBER_OF_VIDEOS = 3
 
 #====GLOBAL VARIABLES====#
 CHARACTER_DESCRIPTION = """
-The main character of the story looks similar to Captain America of Marvel. 
+The main character of the story is a young Asian girl in her teens with black hair and brown eyes.
 """
 
+
 STORYLINE_DESCRIPTION = """
-The photo realistic hyper detailed character is involved on this exact activity: 
+Make the storyline about this exact event with the main character:
 """
 
 GPT_IMAGE_DESCRIPTION = [
-    "Illustrate the man in a striking stance, displaying his strong build.",
-    "Visualize the man working out at the gym with intense dedication.",
-    "Show the man deadlifting 300 pounds.",
-    "As he loses excess weight and starts building muscle, visualize the man growing stronger.",
-    "Illustrate him as he squat-lifts an astonishing load of 500 pounds.",
-    "Depict the man bench pressing 1000 pounds, shocking the onlookers.",
-    "Visualize him trying to lift the entire heavyweight of the gym building.",
-    "Illustrate him pulling a massive cargo ship through the ocean",
-    "Depict the man exerting his force to bring landscapes together.",
-    "Show the man's hair turning blue like a blazing fire as he bench presses the planet earth.",
-    "Illustrate the man in highly defined neon blue and black colors, with blue fire-like hair, lifting planets on a stake.",
-    "Visualize the man smashing galaxies together for amusement, as if playing with toys.",
-    "Present the  man evolving into a divine entity who holds the universe in his hands."
+    "Illustrate the main character watering plants in her garden.",
+    "Show a small droplet of water getting absorbed by a plant sprout and turning it into a large, blooming flower instantly.",
+    "Depict her getting embraced by the flower’s petaled arms and getting showered in pollen.",
+    "Illustrate her transformation into a superhero clad in a green dress with leafy patterns, and her new identity as 'Blossom Bud'.",
+    "Showcase Blossom Bud standing on top of a skyscraper, as she brings about a burst of flora in the urban jungle.",
+    "Depict Blossom Bud creating a rainforest out of a barren desert, demonstrating her power on an immense scale.",
+    "Illustrate Blossom Bud standing on a cliff overlooking the sea, about to transform a lifeless ocean into a vibrant underwater forest.",
+    "Finally, depict Blossom Bud in space watching Earth turn lush and verdant, her astonishing rejuvenation of life and growth reaching cosmic proportions."
 ]
 
 VIDEO_CAPTIONS = [
-    "Meet the 6ft buff guy with blonde hair, exuding power and dominance.",
-    "Here he is at the gym, pushing his limits and working out.",
-    "He lifts with ease, deadlifting 300 pounds!",
-    "He looks stronger in each frame, his muscles getting more pronounced.",
-    "Now, see him squat 500 pounds, smashing personal bests!",
-    "He moves onto bench presses, shockingly lifting 1000 pounds!",
-    "Watch as he elevates his work out, lifting the entire gym building.",
-    "His strength knows no bounds, as he pulls a cargo ship through the ocean.",
-    "Not content, he brings continents closer together with his sheer force.",
-    "Presenting a dramatic change, his hair becomes blue and fiery as he bench-presses our planet Earth.",
-    "His features glow neon blue and black, and his fiery hair stands out as he lifts staked planets.",
-    "For a bit of fun, he flings galaxies together, showing off his incomparable strength.",
-    "Witness the true form of a god as he holds the universe in his hands."
+    "A teenage girl is watering plants in her garden.",
+    "She notices with a single small drop of water, a sprout can bloom into a large flower.",
+    "The flower engulfs her and showers her with pollen.",
+    "Emerging from the flower, she now dons a green dress with leafy patterns, transforming into Blossom Bud.",
+    "Discovering her new abilities, Blossom Bud brings a burst of flora to a city from atop a skyscraper.",
+    "Blossom Bud turns a barren desert into a lush rainforest, showcasing her immense power.",
+    "Blossom Bud stands on a cliff overlooking the sea, ready to make the lifeless ocean a vibrant underwater forest.",
+    "Eventually, Blossom Bud stands in space watching Earth turn lush and verdant, her powers rejuvenating life on a cosmic scale."
 ]
 
 IMAGE_SIZE = "1024x1024"

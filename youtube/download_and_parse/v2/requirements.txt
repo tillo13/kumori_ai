@@ -1,0 +1,32 @@
+# To create a virtual environment and install the required packages, follow these steps:
+
+# On Unix-based systems (Linux/macOS):
+# python3 -m venv env
+# source env/bin/activate
+# pip install -r requirements.txt
+
+# On Windows:
+# python -m venv env
+# .\env\Scripts\activate
+# pip install -r requirements.txt
+
+# requirements.txt
+pytube
+ffmpeg-python
+Pillow
+diffusers>=0.3.0
+moviepy
+numpy
+transformers
+accelerate
+
+# For torch, torchvision, and torchaudio with CUDA support, use the commands provided by the official PyTorch
+# website which will match the CUDA version installed on your system.
+# Example for CUDA 11.8 (Change the CUDA version if needed):
+# pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu118
+
+# Note: FFmpeg must be installed separately on your operating system. It is not a Python package
+# and cannot be included in requirements.txt. Please refer to the official FFmpeg download page:
+# https://ffmpeg.org/download.html
+
+# Note: also install ffmpeg if on windows manually

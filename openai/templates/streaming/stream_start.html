@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Start Streaming
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Enter Text to Start Streaming</h2>
+    <form action="{{ url_for('stream_end') }}" method="GET">
+        <div class="mb-3">
+            <label for="startTextInput" class="form-label">Your Text</label>
+            <input type="text" class="form-control" id="startTextInput" name="inputText" placeholder="Enter text here" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit to Stream</button>
+    </form>
+</div>
+{% endblock %}

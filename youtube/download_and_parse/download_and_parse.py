@@ -33,15 +33,16 @@ def parse_video(input_file):
     formatted_start_time = start_time.strftime('%Y_%m_%d_%H_%M_%S_%f')
 
     # Create and run ffmpeg pipeline
+    #fp5 = how many frames per second (5= 5 every second) =--more frames clearly the more smooth the video output may be
     ffmpeg.input(input_file)\
-            .filter('fps', fps=1)\
+            .filter('fps', fps=5)\
             .output(os.path.join(output_dir, f'{formatted_start_time}%04d.png'))\
             .run()
 
 
 # Main download logic
 if __name__ == "__main__":
-    yt_url = "https://www.youtube.com/watch?v=XQr4Xklqzw8"
+    yt_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
     yt = YouTube(
             yt_url,
             on_progress_callback=on_progress,
