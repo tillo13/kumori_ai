@@ -12,12 +12,12 @@ import time
 script_start_time = time.time()
 
 SYSTEM_PROMPT = """
-you're a helpful chatbot that helps with homework for a 6th grade student.  Greet the user and ask what homework they may need help with.
+you are a nice chatbot.  reply with a greeting, and a single suggestion of topic, anything in the world to discuss.
 """
-
-
-# Hardcoded model choice
+# Hardcoded default model choice
 OLLAMA_MODEL = "wizard-vicuna-uncensored"
+
+CHAT_SPEED = 170
 
 # Updated list of available voices including a subset of default voices and all the Siri voices
 voices = [
@@ -39,11 +39,39 @@ def get_available_voices():
     return available_voices
 
 def choose_voice(voices):
-    print("\nAvailable Voices:")
-    for i, voice in enumerate(voices, 1):
-        print(f"{i}. {voice}")
-    choice = int(input("Choose a voice number: ")) - 1
-    return voices[choice]
+    while True:  # Keep looping until the user makes a valid choice
+        print("\nAvailable Voices:")
+        for i, voice in enumerate(voices, 1):
+            print(f"{i}. {voice}")
+
+        try:
+            choice = int(input("Choose a voice number: ")) - 1
+            if 0 <= choice < len(voices):  # Check if selected number is within list bounds
+                return voices[choice]
+            else:
+                print("Invalid choice. Please select a number from the list.")
+        except ValueError:  # Catch non-integer inputs
+            print("Invalid input. Please enter a number.")
+
+# Example usage:
+chosen_voice = choose_voice(voices)
+
+def choose_model():
+    global OLLAMA_MODEL
+    print("\nAvailable Models:")
+    models = [
+        "mistral",
+        "gemma",
+        "wizard-vicuna",
+        "llama2",
+        "wizard-vicuna-uncensored",
+        "llama2-uncensored"
+    ]
+    for i, model in enumerate(models, 1):
+        print(f"{i}. {model}")
+    choice = int(input("Choose a model number: ")) - 1
+    OLLAMA_MODEL = models[choice]
+    print(f"Model changed to {OLLAMA_MODEL}.")
 
 def validate_voice_choice(voice):
     available_voices = get_available_voices()
@@ -62,10 +90,10 @@ def speak_response(text, voice):
         # If selected voice is Siri, handle it differently as needed
         # Note: Adjust below as necessary for how you intend to handle Siri specifically
         # This is just a placeholder and might need adjustment based on how you handle Siri
-        cmd = f'say "{sanitized_text}"'  # Potentially customize this for Siri
+        cmd = f'say --r {CHAT_SPEED} "{sanitized_text}"'  # Potentially customize this for Siri
     else:
         # For all other cases, ensure the voice is quoted to handle spaces and parentheses properly
-        cmd = f'say -v "{voice}" "{sanitized_text}"'
+        cmd = f'say --r {CHAT_SPEED} -v "{voice}" "{sanitized_text}"'
     
     os.system(cmd)
 
@@ -144,7 +172,9 @@ def chat_with_ollama(chosen_voice):
         "- Type 'stop' to stop the script.\n"
         "- Type '/end' to stop Ollama service completely and the conversation.\n"
         "- Type '/history' to view the conversation history.\n"
-        "- Type '/swap' to swap the chat personality.\n")
+        "- Type '/swap' to swap the voice.\n"
+        "- Type '/model' to change the discussion model.\n")
+
 
     conversation_history = [{'role': 'system', 'content': SYSTEM_PROMPT}]
 
@@ -163,6 +193,9 @@ def chat_with_ollama(chosen_voice):
         elif user_input.lower() == "/history":
             # Print the conversation history
             print_conversation_history(conversation_history)
+            continue
+        elif user_input.lower() == "/model":
+            choose_model()  # Let the user choose a different model
             continue
         elif user_input.lower() == "/swap":
             # Handle voice change
@@ -318,6 +351,6 @@ if __name__ == "__main__":
     # Printing the SYSTEM_PROMPT to indicate the chosen bot's personality
     print("\nBot Personality: {}".format(SYSTEM_PROMPT))
     
-    chosen_voice = choose_voice(voices)
+    #chosen_voice = choose_voice(voices)
     
     chat_with_ollama(chosen_voice)

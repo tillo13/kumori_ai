@@ -3,7 +3,7 @@ from PIL import Image
 import numpy as np  # Make sure to import numpy
 
 # Load the image where you want to add a hat.
-person_image_path = 'person.png'
+person_image_path = 'person_images/img_2045.png'
 person_image = cv2.imread(person_image_path)
 
 # Check if the person image was successfully loaded

@@ -277,7 +277,7 @@ class FacePreprocessor:
 MODEL_DIR = "model"
 PROTOTXT = os.path.join(MODEL_DIR, "deploy.prototxt.txt")
 MODEL = os.path.join(MODEL_DIR, "res10_300x300_ssd_iter_140000.caffemodel")
-INPUT_DIRECTORY = 'person_images'
+INPUT_DIRECTORY = 'test_person_images'
 OUTPUT_DIRECTORY = 'preprocessed_images'
 DESIRED_SIZE = (256, 256)
 PADDING = 20

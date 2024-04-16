@@ -4,6 +4,10 @@
 #gdrive
 credentials.json
 
+#all mp4 or mp3 as too big
+*.mp3
+*.mp4
+
 # created files and folders
 **/created*
 **/video_images*
@@ -12,6 +16,13 @@ credentials.json
 **/saved*
 **/test*
 **/archive*
+**/archive*
+**/latest_video_assets*
+**/person_images*
+**/preprocessed_images*
+**/found_faces*
+**/full_body_images*
+
 # Ignore files and folders containing '_ai_images'
 *_ai_images
 *_ai_images/
