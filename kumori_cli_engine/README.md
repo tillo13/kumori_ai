@@ -319,16 +319,19 @@ Poses to mimic:
 ![deer king](./poses/male_king.jpeg)
 
 Outputs of Brad: 
+
 ![brad_out1](./screenshots/brad_out1.png)
 ![brad_out2](./screenshots/brad_out2.png)
 ![brad_out3](./screenshots/brad_out3.png)
 
 Outputs of Milly: 
+
 ![milly_out1](./screenshots/milly_out1.png)
 ![milly_out2](./screenshots/milly_out2.png)
 ![milly_out3](./screenshots/milly_out3.png)
 
 Process as it runs in Python CLI: 
+
 ![process1](./screenshots/process1.png)
 ![process2](./screenshots/process2.png)
 ![process3](./screenshots/process3.png)
